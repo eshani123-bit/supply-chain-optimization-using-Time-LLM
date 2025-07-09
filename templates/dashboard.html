@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <a href="{{ url_for('recommendations') }}">
+    <button style="padding:14px 25px; font-size:16px; background:#007bff; color:white; border:none; border-radius:5px;">
+        📦 Demand Recommendations
+    </button>
+    <a href="{{ url_for('logistics') }}">
+    <button style="padding:14px 25px; font-size:16px; background:#007bff; color:white; border:none; border-radius:5px;">
+        🚛 View Logistics Optimization
+    </button>
+</a>
+    <style>
+        body { font-family: Arial; margin: 30px; background-color: #f0f4f8; }
+        h1 { color: #004b8d; }
+        .summary { margin-bottom: 30px; font-size: 18px; }
+        .charts { display: flex; flex-direction: column; gap: 50px; }
+        .chart-box { background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        button { padding: 10px 20px; margin-top: 30px; }
+    </style>
+</head>
+
+<body>
+    <h1>📊 Welcome, {{ username }}</h1>
+   
+   
+    <div class="summary">
+        🏆 Top Product: <strong>{{ top_product }}</strong><br>
+        📦 Total Sales: <strong>{{ total_sales }}</strong> units
+    </div>
+    {% if alerts %}
+    <div style="background-color: #fff3cd; color: #856404; padding: 15px; margin-bottom: 20px; border: 1px solid #ffeeba; border-radius: 5px;">
+        <h4>📢 Inventory Alerts</h4>
+        <ul>
+            {% for alert in alerts %}
+            <li>{{ alert }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <div class="charts">
+        <div class="chart-box">
+            <h3>🕒 Last 7 Days Sales Trend</h3>
+            <div id="line-chart" style="height: 400px;"></div>
+        </div>
+
+        <div class="chart-box">
+            <h3>📊 Sales by Product</h3>
+            <div id="bar-chart" style="height: 400px;"></div>
+        </div>
+    </div>
+        <div class="chart-box">
+            {% if session['role'] == 'admin' %}
+            <h3>📤 Upload New Sales Data (CSV)</h3>
+            <form action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data">
+                <input type="file" name="csv_file" accept=".csv" required>
+                <button type="submit">Upload</button>
+             </form>
+            {% endif %}
+        </div>
+    <form action="/">
+        <button type="submit">🔙 Back to Forecast</button>
+    </form>
+
+    <script>
+        // 📈 Line Chart
+        const trendDates = {{ trend_data | map(attribute=0) | list | tojson }};
+        const trendSales = {{ trend_data | map(attribute=1) | list | tojson }};
+        Plotly.newPlot('line-chart', [{
+            x: trendDates,
+            y: trendSales,
+            type: 'scatter',
+            mode: 'lines+markers',
+            marker: { color: 'green' }
+        }], {
+            title: 'Sales in Last 7 Days',
+            xaxis: { title: 'Date' },
+            yaxis: { title: 'Units Sold' }
+        });
+
+        // 📊 Bar Chart
+        const products = {{ product_names | tojson }};
+        const totals = {{ product_totals | tojson }};
+        Plotly.newPlot('bar-chart', [{
+            x: products,
+            y: totals,
+            type: 'bar',
+            marker: { color: 'blue' }
+        }], {
+            title: 'Total Sales by Product',
+            xaxis: { title: 'Product' },
+            yaxis: { title: 'Units Sold' }
+        });
+    </script>
+</body>
+</html>

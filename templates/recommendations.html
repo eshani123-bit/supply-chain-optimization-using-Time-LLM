@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Product Demand Recommendations</title>
+    <style>
+        body { font-family: Arial; padding: 30px; background: #f0f4f8; }
+        h1 { color: #004b8d; }
+        .box { background: #fff; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+        ul { list-style-type: none; padding: 0; }
+        li { padding: 5px 0; }
+        button { margin-top: 20px; padding: 10px 20px; }
+    </style>
+</head>
+<body>
+
+    <h1>👋 Hello, {{ username }}</h1>
+
+    <div class="box">
+        <h3>📈 High Demand Products (Recommend Stocking)</h3>
+        <ul>
+            {% for product, value in top_recommend %}
+            <li><strong>{{ product }}</strong> - Predicted demand: {{ value }} units</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="box">
+        <h3>📉 Low Demand Products (Consider Promotions)</h3>
+        <ul>
+            {% for product, value in low_recommend %}
+            <li><strong>{{ product }}</strong> - Predicted demand: {{ value }} units</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <form action="/">
+        <button type="submit">🔙 Back to Forecast</button>
+    </form>
+
+</body>
+</html>

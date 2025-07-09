@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Logistics & Inventory Optimization</title>
+    
+    <style>
+        table { width: 80%; margin: 30px auto; border-collapse: collapse; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+        th { background-color: #f0f0f0; }
+        .restock { color: red; font-weight: bold; }
+        .ok { color: green; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h2 style="text-align:center;">📦 Logistics & Inventory Optimization</h2>
+    
+    <!-- table as usual -->
+
+    <table>
+        <tr>
+            <th>Product</th>
+            <th>Predicted Demand</th>
+            <th>Current Stock</th>
+            <th>Gap</th>
+            <th>Status</th>
+        </tr>
+        {% for item in recommendations %}
+        <tr>
+            <form method="POST">
+                <td>{{ item['product'] }}</td>
+                <td>{{ item['predicted'] }}</td>
+                <td>{{ item['stock'] }}</td>
+                <td>{{ item['gap'] }}</td>
+                <td class="{{ 'restock' if item['gap'] > 0 else 'ok' }}">{{ item['status'] }}</td>
+            </form>
+        </tr>
+        {% endfor %}
+    </table>
+    
+</body>
+</html>

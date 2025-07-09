@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Supply Chain Demand Predictor</title>
+    {% if session['role'] == 'admin' %}
+        <p style="color: gray; font-size: 20px; margin-bottom: 15px; text-align: center;">
+            🔁 Sales data is automatically uploaded daily at <strong>1:00 AM</strong>.<br>
+            📁 If (admin) wish to upload manually, please use the <strong>Dashboard</strong>.
+        </p>
+    {% endif %}
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f2f6fa;
+            margin: 0;
+            padding: 40px;
+            color: #1a1a1a;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        h1 {
+            color: #004b8d;
+            margin-bottom: 20px;
+        }
+
+        .dashboard-btn {
+            display: inline-block;
+            padding: 12px 24px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+        }
+
+        .dashboard-btn:hover {
+            background-color: #0056b3;
+        }
+
+        form {
+            margin-top: 30px;
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 10px;
+            max-width: 400px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            font-weight: 500;
+        }
+
+        select, button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        button[type="submit"] {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #218838;
+        }
+
+        .result {
+            margin-top: 30px;
+            font-size: 18px;
+            background-color: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            padding: 15px;
+            border-radius: 6px;
+        }
+
+        #forecast-chart {
+            margin-top: 40px;
+            width: 100%;
+            max-width: 800px;
+            height: 400px;
+        }
+    </style>
+</head>
+<body>
+
+    <a href="{{ url_for('dashboard') }}" class="dashboard-btn">📊 Go to Dashboard</a>
+
+    <h1>📦 Supply Chain Demand Forecasting</h1>
+
+    <form method="POST">
+        <label for="product">Select Product:</label><br>
+        <select name="product" id="product" required>
+            <option value="">-- Choose Product --</option>
+            <option value="productA">Product A</option>
+            <option value="productB">Product B</option>
+        </select><br>
+        <button type="submit">Predict Demand</button>
+    </form>
+
+    {% if prediction %}
+        <div class="result">
+            🧠 Predicted Demand for <strong>{{ product }}</strong> (Next 7 Days): <strong>{{ prediction }}</strong> units
+        </div>
+    {% endif %}
+
+    {% if forecast_data %}
+        <div id="forecast-chart"></div>
+        <script>
+            const dates = {{ forecast_data | map(attribute=0) | list | tojson }};
+            const values = {{ forecast_data | map(attribute=1) | list | tojson }};
+
+            Plotly.newPlot('forecast-chart', [{
+                x: dates,
+                y: values,
+                type: 'scatter',
+                mode: 'lines+markers',
+                marker: { color: '#004b8d' },
+                name: '{{ product }} Forecast'
+            }], {
+                title: '📊 7-Day Demand Forecast',
+                xaxis: { title: 'Date' },
+                yaxis: { title: 'Predicted Units' }
+            });
+        </script>
+    {% endif %}
+
+</body>
+</html>
