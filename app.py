@@ -9,14 +9,11 @@ load_dotenv()  # Load variables from .env
 
 app = Flask(__name__)
 
-@app.route('/')
-def home():
-    return f"DB is: {os.getenv('DB_HOST')}"
 
 
 
 
-app = Flask(__name__)
+
 app.secret_key = 'secret_key_123'  # Needed for session
 
 # Database config
