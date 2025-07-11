@@ -47,5 +47,5 @@ Built using:
 
 ---
 
-## 📂 Folder Structure
+
 
